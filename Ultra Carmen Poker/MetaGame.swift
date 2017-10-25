@@ -4,13 +4,11 @@
 import Foundation
 import UIKit
 
-
-
 class MetaGame
 {
 	//============ THE CLASSES ============
 	
-	let viewcontroler = ViewController()
+
 	
 	//=====================================
 	

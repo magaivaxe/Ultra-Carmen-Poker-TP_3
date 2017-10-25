@@ -44,6 +44,8 @@
 		BF937E691F9FDBBA00EAF00A /* a14.png in Resources */ = {isa = PBXBuildFile; fileRef = BF937E451F9FDBB900EAF00A /* a14.png */; };
 		BF937E6A1F9FDBBA00EAF00A /* a27.png in Resources */ = {isa = PBXBuildFile; fileRef = BF937E461F9FDBB900EAF00A /* a27.png */; };
 		BF937E6C1FA034C600EAF00A /* Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF937E6B1FA034C600EAF00A /* Style.swift */; };
+		BF937E6E1FA06CD400EAF00A /* PokerHands.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF937E6D1FA06CD400EAF00A /* PokerHands.swift */; };
+		BF937E701FA0729B00EAF00A /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF937E6F1FA0729B00EAF00A /* Game.swift */; };
 		BFBCB2DE1F9EFF3C00813614 /* BLACKJAC.TTF in Resources */ = {isa = PBXBuildFile; fileRef = BFBCB2DD1F9EFF3C00813614 /* BLACKJAC.TTF */; };
 		BFBCB2E01F9F193100813614 /* carmemroyal.png in Resources */ = {isa = PBXBuildFile; fileRef = BFBCB2DF1F9F193100813614 /* carmemroyal.png */; };
 		BFBCB30F1F9F1F9D00813614 /* table.png in Resources */ = {isa = PBXBuildFile; fileRef = BFBCB2FF1F9F1F9A00813614 /* table.png */; };
@@ -195,6 +197,8 @@
 		BF937E451F9FDBB900EAF00A /* a14.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = a14.png; sourceTree = "<group>"; };
 		BF937E461F9FDBB900EAF00A /* a27.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = a27.png; sourceTree = "<group>"; };
 		BF937E6B1FA034C600EAF00A /* Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Style.swift; sourceTree = "<group>"; };
+		BF937E6D1FA06CD400EAF00A /* PokerHands.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PokerHands.swift; sourceTree = "<group>"; };
+		BF937E6F1FA0729B00EAF00A /* Game.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Game.swift; sourceTree = "<group>"; };
 		BFBCB2DD1F9EFF3C00813614 /* BLACKJAC.TTF */ = {isa = PBXFileReference; lastKnownFileType = file; path = BLACKJAC.TTF; sourceTree = "<group>"; };
 		BFBCB2DF1F9F193100813614 /* carmemroyal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = carmemroyal.png; sourceTree = "<group>"; };
 		BFBCB2FF1F9F1F9A00813614 /* table.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = table.png; sourceTree = "<group>"; };
@@ -529,8 +533,10 @@
 				BFBCB2DC1F9EFF0900813614 /* Fonts */,
 				BFBCB2DB1F9EFEF100813614 /* Images */,
 				BFFE12461F99ABB600735453 /* AppDelegate.swift */,
+				BF937E6D1FA06CD400EAF00A /* PokerHands.swift */,
 				BFFE12481F99ABB600735453 /* ViewController.swift */,
 				BFBCB3D51F9FB4CC00813614 /* MetaGame.swift */,
+				BF937E6F1FA0729B00EAF00A /* Game.swift */,
 				BFBCB3D31F9FA98600813614 /* Animation.swift */,
 				BF937E6B1FA034C600EAF00A /* Style.swift */,
 				BFFE124A1F99ABB600735453 /* Main.storyboard */,
@@ -755,8 +761,10 @@
 			files = (
 				BFFE12491F99ABB600735453 /* ViewController.swift in Sources */,
 				BFBCB3D41F9FA98600813614 /* Animation.swift in Sources */,
+				BF937E701FA0729B00EAF00A /* Game.swift in Sources */,
 				BFBCB3D61F9FB4CC00813614 /* MetaGame.swift in Sources */,
 				BFFE12471F99ABB600735453 /* AppDelegate.swift in Sources */,
+				BF937E6E1FA06CD400EAF00A /* PokerHands.swift in Sources */,
 				BF937E6C1FA034C600EAF00A /* Style.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

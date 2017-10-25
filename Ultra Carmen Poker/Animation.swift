@@ -7,8 +7,8 @@ import UIKit
 class Animation
 {
 	//============ THE CLASSES ============
-
-	let viewcontroler = ViewController()
+	
+	
 	
 	//=====================================
 	
@@ -74,12 +74,41 @@ class Animation
 		return arrayToReturn
 	}
 	//-------------------------------------
-
 	
-	
-	
+	//-------- Animations Layers ----------
+	func animationLayers(label l: UILabel,
+	                           borderWidth w: CGFloat,
+	                           borderColor c: CGColor,
+	                           bgColor g: CGColor,
+	                           repeating r: Int)
+	{
+		for _ in 1...r
+		{
+			Timer.scheduledTimer(timeInterval: 0.2,
+			                     target: self,
+			                     selector: #selector(timeSchedule),
+			                     userInfo: nil,
+			                     repeats: false)
+		}
+		
+		
+	}
+	@objc func timeSchedule(label l: UILabel,
+	                        borderWidth w: CGFloat,
+	                        borderColor c: CGColor,
+	                        bgColor g: CGColor)
+	{
+		l.layer.borderWidth = w
+		l.layer.borderColor = c
+		l.layer.backgroundColor = g
+	}
+	//-------------------------------------
 	
 }
+	
+
+
+
 
 
 
