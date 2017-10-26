@@ -28,9 +28,9 @@ class Game
 		}
 		
 		var allSelected = true
-		for slotAnimation in viewcontroler.arraySlots
+		for backAnimation in viewcontroler.arrayBacks
 		{
-			if slotAnimation.layer.borderWidth != 1.0
+			if backAnimation.layer.borderWidth != 1.0
 			{
 				allSelected = false
 				break
@@ -39,14 +39,14 @@ class Game
 		
 		if allSelected == true
 		{
-			//displayRandomcards()
+			randomCards()
 			return
 		}
-		for slotAnimation in viewcontroler.arraySlots
+		for backAnimation in viewcontroler.arrayBacks
 		{
-			if slotAnimation.layer.borderWidth != 1.0
+			if backAnimation.layer.borderWidth != 1.0
 			{
-				slotAnimation.startAnimating()
+				backAnimation.startAnimating()
 			}
 		}
 		Timer.scheduledTimer(timeInterval: 2.4,
@@ -96,7 +96,7 @@ class Game
 	{
 		for index in 0...4
 		{
-			viewcontroler.arraySlots[index].layer.borderWidth = 0.5
+			viewcontroler.arrayBacks[index].layer.borderWidth = 0.5
 			viewcontroler.arrayBgs[index].layer.borderWidth = 0.0
 			viewcontroler.arrayBgs[index].layer.backgroundColor = nil
 			viewcontroler.arrayKeep[index].isHidden = true
@@ -147,15 +147,35 @@ class Game
 					viewcontroler.handToAnalyse.append(viewcontroler.theHand[counter])
 				}
 			
-			slotAnimation.image = UIImage(named: arrayOfCards[counter])
+				slotAnimation.image = UIImage(named: arrayOfCards[counter])
 			}
 			counter = counter + 1
 		}
+		
+		Timer.scheduledTimer(timeInterval: 0.5,
+		                     target: self,
+		                     selector: #selector(turnCartes),
+		                     userInfo: nil,
+		                     repeats: false)
 		
 		if viewcontroler.chances == 0
 		{
 			let tempHand = viewcontroler.handToAnalyse
 			verifyHand(hand: tempHand)
+		}
+	}
+	
+	@objc func turnCartes()
+	{
+		var counter = 0
+		for flipAnimation in viewcontroler.arrayBgs
+		{
+			if flipAnimation.layer.borderWidth != 1
+			{
+				animation.showCard(from: viewcontroler.arrayBackViews[counter],
+				                   to: viewcontroler.arrayFaceViews[counter])
+			}
+			counter = counter + 1
 		}
 	}
 	//--------------------------------------

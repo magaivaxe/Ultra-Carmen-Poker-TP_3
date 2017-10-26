@@ -7,6 +7,7 @@
 import UIKit
 
 class ViewController: UIViewController
+
 {
 	//============ THE OUTLETS ============
 	
@@ -18,6 +19,15 @@ class ViewController: UIViewController
 	@IBOutlet weak var slot_4: UIImageView!
 	@IBOutlet weak var slot_5: UIImageView!
 	//-------------------------------------
+	
+	//------------ cards slots ------------
+	@IBOutlet weak var back_image_1: UIImageView!
+	@IBOutlet weak var back_image_2: UIImageView!
+	@IBOutlet weak var back_image_3: UIImageView!
+	@IBOutlet weak var back_image_4: UIImageView!
+	@IBOutlet weak var back_image_5: UIImageView!
+	//-------------------------------------
+	
 	
 	//--------- cards backgrounds ---------
 	@IBOutlet weak var bg_1: UIView!
@@ -71,21 +81,26 @@ class ViewController: UIViewController
 	
 	//=========== THE VARIABLES ===========
 	
-	var arrayBacksAnimation: [UIImage]!	 /* array of cards backs to animation */
-	var arraySlots: [UIImageView]! 		 /* array of all game slots */
-	var deck = [(Int, String)]()		 /* touple of the deck Int: card number, String: card suit */
-	var arrayBgs: [UIView]!				 /* array of the backgrounds cards of UIView type */
+	var arrayBacksAnimation: [UIImage]!	 /* array of back cards to animation */
+	
+	var arrayBacks: [UIImageView]!		 /* array of cards back to animation */
+	var arraySlots: [UIImageView]! 		 /* array of game slots to place the cards */
+	
 	var arrayKeep: [UILabel]!			 /* array of the labels keep to show "GARDER" */
+	
+	var arrayBgs: [UIView]!				 /* array of the place cards */
 	var arrayFaceViews: [UIView]!		 /* array of the face views to flip and reflip */
 	var arrayBackViews: [UIView]!		 /* array of the back views to flip and reflip */
 	
-	var theHand = [(Int, String)]()		 /* Touple to do the hand to play*/
+	var theHand = [(Int, String)]()		 /* Touple to do the hand to play */
+	var handToAnalyse = [(Int, String)]()
+	var deck = [(Int, String)]()		 /* touple of the deck Int: card number, String: card suit */
 	
 	var permissionCards = false
 	var bet = 0
 	var credits = 2000
 	var chances = 2
-	var handToAnalyse = [(0, ""), (0, ""), (0, ""), (0, ""), (0, "")]
+	
 	
 	//------------ THE CLASSES ------------
 	let metagame = MetaGame()				/* Call the class MetaGame() */
@@ -108,7 +123,7 @@ class ViewController: UIViewController
 		//----- Stylized the backgrounds ------
 		style.styleViews(arrayViews: arrayBgs,
 		                 radius: 10,
-		                 borderWidth: nil,
+		                 borderWidth: nil,						/* Its used to keep the cards */
 		                 borderColor: UIColor.black.cgColor,
 		                 bgColor: nil)
 		//-------------------------------------
@@ -127,10 +142,16 @@ class ViewController: UIViewController
 		                 bgColor: nil)
 		//-------------------------------------
 		
-		//-------- Stylized the slots ---------
+		//-- Stylized slots and image backs ---
 		style.styleImageViews(arrayImageViews: arraySlots,
 		                      radius: 10,
-		                      borderWidth: 0.5,					/* Its used to keep the cards */
+		                      borderWidth: 0.5,
+		                      borderColor: UIColor.black.cgColor,
+		                      bgColor: nil)
+		
+		style.styleImageViews(arrayImageViews: arrayBacks,
+		                      radius: 10,
+		                      borderWidth: 0.5,
 		                      borderColor: UIColor.black.cgColor,
 		                      bgColor: nil)
 		
@@ -138,7 +159,7 @@ class ViewController: UIViewController
 		
 		//--------Prepered Animations ---------
 		
-		animation.animationSequentialCards(cards: arraySlots,
+		animation.animationSequentialCards(cards: arrayBacks,
 		                                   duration: 0.3,
 		                                   repeating: 8,
 		                                   seqCards: arrayBacksAnimation)
@@ -152,10 +173,15 @@ class ViewController: UIViewController
 	func fillArrays()
 	{
 		arraySlots = [slot_1, slot_2, slot_3, slot_4, slot_5]
+		arrayBacks = [back_image_1, back_image_2, back_image_3, back_image_4, back_image_5]
+		
 		arrayKeep = [keep_1, keep_2, keep_3, keep_4, keep_5]
+		
 		arrayBgs = [bg_1, bg_2, bg_3, bg_4, bg_5]
 		arrayFaceViews = [face_view_1, face_view_2, face_view_3, face_view_4, face_view_5]
 		arrayBackViews = [back_view_1, back_view_2, back_view_3, back_view_4, back_view_5]
+		
+		handToAnalyse = [(0, ""), (0, ""), (0, ""), (0, ""), (0, "")]
 	}
 	//-------------------------------------
 

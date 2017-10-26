@@ -1,3 +1,6 @@
+import Foundation
+
+
 class PokerHands {
     //==============================================
     func royalFlush(hand: [(card: Int, suit: String)]) -> Bool {
