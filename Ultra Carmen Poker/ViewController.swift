@@ -83,8 +83,8 @@ class ViewController: UIViewController
 	
 	var arrayBacksAnimation: [UIImage]!	 /* array of back cards to animation */
 	
-	var arrayBacks: [UIImageView]!		 /* array of cards back to animation */
-	var arraySlots: [UIImageView]! 		 /* array of game slots to place the cards */
+	var arrayBacks = [UIImageView]()		 /* array of cards back to animation */
+	var arraySlots = [UIImageView]() 		 /* array of game slots to place the cards */
 	
 	var arrayKeep: [UILabel]!			 /* array of the labels keep to show "GARDER" */
 	
@@ -94,7 +94,7 @@ class ViewController: UIViewController
 	
 	var theHand = [(Int, String)]()		 /* Touple to do the hand to play */
 	var handToAnalyse = [(Int, String)]()
-	var deck = [(Int, String)]()		 /* touple of the deck Int: card number, String: card suit */
+	
 	
 	var permissionCards = false
 	var bet = 0
@@ -102,20 +102,22 @@ class ViewController: UIViewController
 	var chances = 2
 	
 	
-	//------------ THE CLASSES ------------
-	let metagame = MetaGame()				/* Call the class MetaGame() */
-	let style = Style()						/* Call the class Style() */
-	let animation = Animation()				/* Call the class Animation() */
-	let game = Game()
-	//-------------------------------------
+	
 	
 	//============ THE DIDLOAD ============
 	override func viewDidLoad()
 	{
 		super.viewDidLoad()
 		
+		//------------ THE CLASSES ------------
+		let metagame = MetaGame()				/* Call the class MetaGame() */
+		let style = Style()						/* Call the class Style() */
+		let animation = Animation()				/* Call the class Animation() */
+		
+		//-------------------------------------
+		
 		//---- To create the arrays cards -----
-		deck = metagame.createDeck()							/* the deck */
+		
 		arrayBacksAnimation = metagame.backsFilesToArray()		/* array of UIImage */
 		fillArrays()											/* Others arrays */
 		//-------------------------------------
@@ -166,6 +168,8 @@ class ViewController: UIViewController
 		
 		
 		//-------------------------------------
+		
+	
 	}
 	//=====================================
 	
@@ -232,7 +236,7 @@ class ViewController: UIViewController
 	//---------- Deal and play  -----------
 	@IBAction func deal_and_play(_ sender: UIButton)
 	{
-		game.initialize()
+		initialize()
 	}
 	
 	//------------- New game  -------------
@@ -251,8 +255,293 @@ class ViewController: UIViewController
 	
 	//=====================================
 
-
+	func initialize()
+	{
+		if chances == 0
+		{
+			return
+		}
+		else
+		{
+			chances = chances - 1
+		}
+		
+		var allSelected = true
+		for backAnimation in arrayBacks
+		{
+			if backAnimation.layer.borderWidth != 1.0
+			{
+				allSelected = false
+				break
+			}
+		}
+		
+		if allSelected == true
+		{
+			randomCards()
+			return
+		}
+		for backAnimation in arrayBacks
+		{
+			if backAnimation.layer.borderWidth != 1.0
+			{
+				backAnimation.startAnimating()
+			}
+		}
+		Timer.scheduledTimer(timeInterval: 2.4,
+		                     target: self,
+		                     selector: #selector(randomCards),
+		                     userInfo: nil,
+		                     repeats: false)
+	}
+	//--------------------------------------
+	
+	//------ The random cards to game ------
+	@objc func randomCards()
+	{
+		theHand = returnRandomHand()
+		
+		let arrayOfCards = createCards(theHand: theHand)
+		
+		displayCards(arrayOfCards: arrayOfCards)
+		
+		permissionCards = true
+		
+		prepareForNextHand()
+	}
+	//--------------------------------------
+	
+	//------  ------
+	func prepareForNextHand()
+	{
+		if chances == 0
+		{
+			permissionCards = false
+			dealButton.alpha = 0.5
+			resetCards()
+			handToAnalyse = [(0, ""), (0, ""), (0, ""), (0, ""), (0, "")]
+			chances = 2
+			bet = 0
+			
+		}
+	}
+	//--------------------------------------
+	
+	//------  ------
+	func resetCards()
+	{
+		let metagame = MetaGame()
+		for index in 0...4
+		{
+			arrayBacks[index].layer.borderWidth = 0.5
+			arrayBgs[index].layer.borderWidth = 0.0
+			arrayBgs[index].layer.backgroundColor = nil
+			arrayKeep[index].isHidden = true
+		}
+		chances = 2
+		var deck = metagame.createDeck()
+	}
+	//--------------------------------------
+	
+	//------- Return the random hand -------
+	func returnRandomHand() -> [(Int, String)] 			/* return the random hand to play */
+	{
+		var deck = [(Int, String)]()
+		var arrayToReturn = [(Int, String)]()
+		
+		let metagame = MetaGame()
+		deck = metagame.createDeck()
+		
+		for _ in 1...5
+		{
+			let randomIndex = Int(arc4random_uniform(UInt32(deck.count)))
+			
+			arrayToReturn.append(deck[randomIndex])
+			deck.remove(at: randomIndex)
+		}
+		return arrayToReturn
+	}
+	//--------------------------------------
+	
+	//------ Return the array to play ------
+	func createCards(theHand: [(Int, String)]) -> [String]
+	{
+		let card_1 = "\(theHand[0].0)\(theHand[0].1).png"
+		let card_2 = "\(theHand[1].0)\(theHand[1].1).png"
+		let card_3 = "\(theHand[2].0)\(theHand[2].1).png"
+		let card_4 = "\(theHand[3].0)\(theHand[3].1).png"
+		let card_5 = "\(theHand[4].0)\(theHand[4].1).png"
+		return [card_1, card_2, card_3, card_4, card_5]
+	}
+	//--------------------------------------
+	
+	//------  ------
+	func displayCards(arrayOfCards: [String])
+	{
+		var counter = 0
+		for slotAnimation in arraySlots
+		{
+			if slotAnimation.layer.borderWidth != 1
+			{
+				if chances == 0
+				{
+					handToAnalyse = removeEmptySlotsAndReturnArray()
+					handToAnalyse.append(theHand[counter])
+				}
+				
+				slotAnimation.image = UIImage(named: arrayOfCards[counter])
+			}
+			counter = counter + 1
+		}
+		
+		Timer.scheduledTimer(timeInterval: 0.5,
+		                     target: self,
+		                     selector: #selector(turnCartes),
+		                     userInfo: nil,
+		                     repeats: false)
+		
+		if chances == 0
+		{
+			verifyHand(hand: handToAnalyse)
+		}
+	}
+	
+	@objc func turnCartes()
+	{
+		let animation = Animation()
+		var counter = 0
+		for flipAnimation in arrayBgs
+		{
+			if flipAnimation.layer.borderWidth != 1
+			{
+				animation.showCard(from: arrayBackViews[counter],
+				                   to: arrayFaceViews[counter])
+			}
+			counter = counter + 1
+		}
+	}
+	//--------------------------------------
+	
+	//------  ------
+	func removeEmptySlotsAndReturnArray() -> [(Int, String)]
+	{
+		var arrayToReturn = [(Int, String)]()
+		
+		for card in handToAnalyse
+		{
+			if card != (0, "")
+			{
+				arrayToReturn.append(card)
+			}
+		}
+		return arrayToReturn
+	}
+	//--------------------------------------
+	
+	//------  ------
+	func verifyHand(hand: [(Int, String)])
+	{
+		let pokerHands = PokerHands()
+		let animation = Animation()
+		if pokerHands.royalFlush(hand: hand)
+		{
+			animation.animationLayers(label: carmem_royal_flush,
+			                          borderWidth: 5,
+			                          borderColor: UIColor.yellow.cgColor,
+			                          bgColor: UIColor.red.cgColor,
+			                          repeating: 10)
+			
+			calculateHand(times: 250)
+		}
+		else if pokerHands.straightFlush(hand: hand)
+		{
+			animation.animationLayers(label: straight_flush,
+			                          borderWidth: 5,
+			                          borderColor: UIColor.yellow.cgColor,
+			                          bgColor: UIColor.white.cgColor,
+			                          repeating: 10)
+			calculateHand(times: 50)
+		}
+		else if pokerHands.fourKind(hand: hand)
+		{
+			animation.animationLayers(label: four_of_kind,
+			                          borderWidth: 5,
+			                          borderColor: UIColor.yellow.cgColor,
+			                          bgColor: UIColor.white.cgColor,
+			                          repeating: 10)
+			calculateHand(times: 25)
+		}
+		else if pokerHands.fullHouse(hand: hand)
+		{
+			animation.animationLayers(label: full_house,
+			                          borderWidth: 5,
+			                          borderColor: UIColor.yellow.cgColor,
+			                          bgColor: UIColor.white.cgColor,
+			                          repeating: 10)
+			calculateHand(times: 9)
+		}
+		else if pokerHands.flush(hand: hand)
+		{
+			animation.animationLayers(label: flush,
+			                          borderWidth: 5,
+			                          borderColor: UIColor.yellow.cgColor,
+			                          bgColor: UIColor.white.cgColor,
+			                          repeating: 10)
+			calculateHand(times: 6)
+		}
+		else if pokerHands.straight(hand: hand)
+		{
+			animation.animationLayers(label: straight,
+			                          borderWidth: 5,
+			                          borderColor: UIColor.yellow.cgColor,
+			                          bgColor: UIColor.white.cgColor,
+			                          repeating: 10)
+			calculateHand(times: 4)
+		}
+		else if pokerHands.threeKind(hand: hand)
+		{
+			animation.animationLayers(label: three_of_kind,
+			                          borderWidth: 5,
+			                          borderColor: UIColor.yellow.cgColor,
+			                          bgColor: UIColor.white.cgColor,
+			                          repeating: 10)
+			calculateHand(times: 3)
+		}
+		else if pokerHands.twoPairs(hand: hand)
+		{
+			animation.animationLayers(label: two_pair,
+			                          borderWidth: 5,
+			                          borderColor: UIColor.yellow.cgColor,
+			                          bgColor: UIColor.white.cgColor,
+			                          repeating: 10)
+			calculateHand(times: 2)
+		}
+		else if pokerHands.onePair(hand: hand)
+		{
+			animation.animationLayers(label: jacks_or_better,
+			                          borderWidth: 5,
+			                          borderColor: UIColor.yellow.cgColor,
+			                          bgColor: UIColor.white.cgColor,
+			                          repeating: 10)
+			calculateHand(times: 1)
+		}
+		else
+		{
+			calculateHand(times: 0)
+		}
+	}
+	//--------------------------------------
+	
+	//------  ------
+	func calculateHand(times: Int)
+	{
+		credits += (times * bet)
+		credits_label.text = "$\(credits)"
+	}
+	//--------------------------------------
+	
 }
+
 
 
 
