@@ -29,8 +29,79 @@ class MetaGame
 	}
 	//--------------------------------------
 	
+	//---- Set one Image to ImageViews -----
+	func setUIImageToUIImageViews(arrayOfImageViews aiv: [UIImageView], uiImage ui: UIImage)
+	{
+		for imageview in aiv
+		{
+			imageview.image = ui
+		}
+	}
+	//--------------------------------------
+	
+	//------ Create the random array -------
+	func arrayOfRandomElements(arrayToCreateRandom atcr: [(Int, String)],
+	                           arrayToChoiceRandom acr: [(Int, String)],
+	                           sizeOfRandomArray sra: Int) ->[(Int, String)]
+	{
+		var atcrVar = atcr
+		var acrVar = acr
+		
+		for _ in 1...sra
+		{
+			let randomNumber = Int(arc4random_uniform(UInt32(acr.count)))
+			atcrVar.append(acrVar[randomNumber])
+			acrVar.remove(at: randomNumber)
+		}
+		return atcrVar
+	}
+	//--------------------------------------
+	
+	//------ Create string array from touple -------
+	/* .0 and .1 its touple position of each [index] */
+	
+	func createStringArrayOfFilesFromTouple(touple t: [(Int, String)],
+	                                        fileType f: String) -> [String]
+	{
+		let file_1 = "\(t[0].0)\(t[0].1).\(f)"
+		let file_2 = "\(t[1].0)\(t[1].1).\(f)"
+		let file_3 = "\(t[2].0)\(t[2].1).\(f)"
+		let file_4 = "\(t[3].0)\(t[3].1).\(f)"
+		let file_5 = "\(t[4].0)\(t[4].1).\(f)"
+		
+		return [file_1, file_2, file_3, file_4, file_5]
+	}
+	//--------------------------------------
+	
+	//------ Remove the empty slots---------
+	func removeEmptySlotsAndReturnArray(toupleToAnalyse ta: [(Int, String)]) -> [(Int, String)]
+	{
+		var arrayToReturn = [(Int, String)]()
+		
+		for card in ta
+		{
+			if card != (0, "")
+			{
+				arrayToReturn.append(card)
+			}
+		}
+		return arrayToReturn
+	}
+	
+	//--------------------------------------
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	//----- Create the array of backs ------			/* Create the array of card back to animation */
-														/* I tryed to do the boucle to fill the array and to assign the variables, but I failed */
+	
 	func backsFilesToArray()->[UIImage]
 	{
 		var a1: UIImage!; var a2: UIImage!; var a3: UIImage!

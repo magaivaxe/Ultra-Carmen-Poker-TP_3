@@ -86,24 +86,26 @@ class ViewController: UIViewController
 	var arrayBacks = [UIImageView]()		 /* array of cards back to animation */
 	var arraySlots = [UIImageView]() 		 /* array of game slots to place the cards */
 	
-	var arrayKeep: [UILabel]!			 /* array of the labels keep to show "GARDER" */
+	var arrayKeep: [UILabel]!				 /* array of the labels keep to show "GARDER" */
 	
-	var arrayBgs: [UIView]!				 /* array of the place cards */
-	var arrayFaceViews: [UIView]!		 /* array of the face views to flip and reflip */
-	var arrayBackViews: [UIView]!		 /* array of the back views to flip and reflip */
+	var arrayBgs: [UIView]!					 /* array of the place cards */
+	var arrayFaceViews: [UIView]!			 /* array of the face views to flip and reflip */
+	var arrayBackViews: [UIView]!			 /* array of the back views to flip and reflip */
 	
-	var theHand = [(Int, String)]()		 /* Touple to do the hand to play */
-	var handToAnalyse = [(Int, String)]()
+	var deck = [(Int, String)]()			 /* touple to set all playing cards*/
+	var arrayToFill = [(Int, String)]()		 /* touple to fill theHand touple with random cards*/
+	var theHand = [(Int, String)]()		 	 /* Touple to do the hand to play */
+	var handToAnalyse = [(Int, String)]()	 /* Hand to analize the final hand */
 	
 	
-	var permissionCards = false
+	
+	
+	var permissionToSelectCards = false
 	var bet = 0
 	var credits = 2000
 	var chances = 2
 	
-	
-	
-	
+
 	//============ THE DIDLOAD ============
 	override func viewDidLoad()
 	{
@@ -119,7 +121,14 @@ class ViewController: UIViewController
 		//---- To create the arrays cards -----
 		
 		arrayBacksAnimation = metagame.backsFilesToArray()		/* array of UIImage */
-		fillArrays()											/* Others arrays */
+		deck = metagame.createDeck()							/* array of playing cards */
+		fillArrays()											/* fill others arrays */
+		//-------------------------------------
+		
+		//--- Set backs on the image views ----
+		
+		metagame.setUIImageToUIImageViews(arrayOfImageViews: arrayBacks, uiImage: #imageLiteral(resourceName: "back.png"))
+		
 		//-------------------------------------
 		
 		//----- Stylized the backgrounds ------
@@ -236,6 +245,19 @@ class ViewController: UIViewController
 	//---------- Deal and play  -----------
 	@IBAction func deal_and_play(_ sender: UIButton)
 	{
+		let animation = Animation()
+		var index = 0
+		
+		for back in arrayBackViews
+		{
+			if back.isHidden == true
+			{
+				animation.hideCard(from: arrayFaceViews[index],
+				                   to: arrayBackViews[index])
+			}
+			index = index + 1
+		}
+		
 		initialize()
 	}
 	
@@ -266,17 +288,18 @@ class ViewController: UIViewController
 			chances = chances - 1
 		}
 		
-		var allSelected = true
+		var cardSelected = true
+		
 		for backAnimation in arrayBacks
 		{
 			if backAnimation.layer.borderWidth != 1.0
 			{
-				allSelected = false
+				cardSelected = false
 				break
 			}
 		}
 		
-		if allSelected == true
+		if cardSelected == true
 		{
 			randomCards()
 			return
@@ -299,30 +322,91 @@ class ViewController: UIViewController
 	//------ The random cards to game ------
 	@objc func randomCards()
 	{
-		theHand = returnRandomHand()
+		let metagame = MetaGame()
+		let file: String = "png"		/* File type to create arrayOfCards */
 		
-		let arrayOfCards = createCards(theHand: theHand)
+		/* Return the random hand to theHand*/
+		theHand = metagame.arrayOfRandomElements(arrayToCreateRandom: arrayToFill,
+		                                         arrayToChoiceRandom: deck,
+		                                         sizeOfRandomArray: 5)
 		
-		displayCards(arrayOfCards: arrayOfCards)
+		/* return the files from theHand to arrayOfCards */
+		let arrayOfCards = metagame.createStringArrayOfFilesFromTouple(touple: theHand,
+		                                                               fileType: file)
 		
-		permissionCards = true
+		displayCards(arrayOfStringFiles: arrayOfCards)
+		
+		permissionToSelectCards = true
 		
 		prepareForNextHand()
 	}
 	//--------------------------------------
 	
-	//------  ------
-	func prepareForNextHand()
+	//----------- Show the cards -----------
+	func displayCards(arrayOfStringFiles: [String])
 	{
+		let metagame = MetaGame()
+		var counter = 0
+		
+		for slot in arraySlots
+		{
+			if slot.layer.borderWidth != 1				/* if its don't selected */
+			{
+				if chances == 0							/* if its second turn */
+				{
+					handToAnalyse = metagame.removeEmptySlotsAndReturnArray(toupleToAnalyse: handToAnalyse)
+					
+					handToAnalyse.append(theHand[counter]) /* Add theHand to final hand analyse */
+				}
+				slot.image = UIImage(named: arrayOfStringFiles[counter]) /* Fist turn add cards on voids slots */
+				
+				Timer.scheduledTimer(timeInterval: 0.5,		/* if card was set image turn */
+				                     target: self,
+				                     selector: #selector(turnCartes),
+				                     userInfo: nil,
+				                     repeats: false)
+			}
+			counter = counter + 1
+		}
 		if chances == 0
 		{
-			permissionCards = false
+			verifyHand(hand: handToAnalyse)
+		}
+	}
+	
+	//-------- Turn to reveal cards --------
+	@objc func turnCartes()
+	{
+		let animation = Animation()
+		var index = 0
+		for slot in arraySlots
+		{
+			if slot.layer.borderWidth != 1
+			{
+				animation.showCard(from: arrayBackViews[index], to: arrayFaceViews[index])
+			}
+			index = index + 1
+		}
+		return
+	}
+	//--------------------------------------
+	
+	//------------------  -----------------
+	
+	func prepareForNextHand()
+	{
+		let metagame = MetaGame()
+		
+		if chances == 0
+		{
+			permissionToSelectCards = false
 			dealButton.alpha = 0.5
-			resetCards()
-			handToAnalyse = [(0, ""), (0, ""), (0, ""), (0, ""), (0, "")]
 			chances = 2
+			deck = metagame.createDeck()
+			handToAnalyse = [(0, ""), (0, ""), (0, ""), (0, ""), (0, "")]
 			bet = 0
 			
+			resetCards()
 		}
 	}
 	//--------------------------------------
@@ -330,114 +414,19 @@ class ViewController: UIViewController
 	//------  ------
 	func resetCards()
 	{
-		let metagame = MetaGame()
+		let animation = Animation()
 		for index in 0...4
 		{
 			arrayBacks[index].layer.borderWidth = 0.5
 			arrayBgs[index].layer.borderWidth = 0.0
 			arrayBgs[index].layer.backgroundColor = nil
 			arrayKeep[index].isHidden = true
-		}
-		chances = 2
-		var deck = metagame.createDeck()
-	}
-	//--------------------------------------
-	
-	//------- Return the random hand -------
-	func returnRandomHand() -> [(Int, String)] 			/* return the random hand to play */
-	{
-		var deck = [(Int, String)]()
-		var arrayToReturn = [(Int, String)]()
-		
-		let metagame = MetaGame()
-		deck = metagame.createDeck()
-		
-		for _ in 1...5
-		{
-			let randomIndex = Int(arc4random_uniform(UInt32(deck.count)))
 			
-			arrayToReturn.append(deck[randomIndex])
-			deck.remove(at: randomIndex)
-		}
-		return arrayToReturn
-	}
-	//--------------------------------------
-	
-	//------ Return the array to play ------
-	func createCards(theHand: [(Int, String)]) -> [String]
-	{
-		let card_1 = "\(theHand[0].0)\(theHand[0].1).png"
-		let card_2 = "\(theHand[1].0)\(theHand[1].1).png"
-		let card_3 = "\(theHand[2].0)\(theHand[2].1).png"
-		let card_4 = "\(theHand[3].0)\(theHand[3].1).png"
-		let card_5 = "\(theHand[4].0)\(theHand[4].1).png"
-		return [card_1, card_2, card_3, card_4, card_5]
-	}
-	//--------------------------------------
-	
-	//------  ------
-	func displayCards(arrayOfCards: [String])
-	{
-		var counter = 0
-		for slotAnimation in arraySlots
-		{
-			if slotAnimation.layer.borderWidth != 1
-			{
-				if chances == 0
-				{
-					handToAnalyse = removeEmptySlotsAndReturnArray()
-					handToAnalyse.append(theHand[counter])
-				}
-				
-				slotAnimation.image = UIImage(named: arrayOfCards[counter])
-			}
-			counter = counter + 1
-		}
-		
-		Timer.scheduledTimer(timeInterval: 0.5,
-		                     target: self,
-		                     selector: #selector(turnCartes),
-		                     userInfo: nil,
-		                     repeats: false)
-		
-		if chances == 0
-		{
-			verifyHand(hand: handToAnalyse)
+			animation.hideCard(from: arrayFaceViews[index],
+			                   to: arrayBackViews[index])
 		}
 	}
-	
-	@objc func turnCartes()
-	{
-		let animation = Animation()
-		var counter = 0
-		for flipAnimation in arrayBgs
-		{
-			if flipAnimation.layer.borderWidth != 1
-			{
-				animation.showCard(from: arrayBackViews[counter],
-				                   to: arrayFaceViews[counter])
-			}
-			counter = counter + 1
-		}
-	}
-	//--------------------------------------
-	
-	//------  ------
-	func removeEmptySlotsAndReturnArray() -> [(Int, String)]
-	{
-		var arrayToReturn = [(Int, String)]()
-		
-		for card in handToAnalyse
-		{
-			if card != (0, "")
-			{
-				arrayToReturn.append(card)
-			}
-		}
-		return arrayToReturn
-	}
-	//--------------------------------------
-	
+
 	//------  ------
 	func verifyHand(hand: [(Int, String)])
 	{
